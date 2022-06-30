@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 5000;
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 //this is midleware
 app.use(cors());
@@ -33,6 +33,14 @@ async function run() {
       const cursor = blogcollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
+    });
+
+    //find one using id from database
+    app.get("/blogs/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const blog = await blogcollection.findOne(query);
+      res.send(blog);
     });
 
     // add new furniture

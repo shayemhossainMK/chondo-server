@@ -40,7 +40,8 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const blog = await blogcollection.findOne(query);
-      res.send(blog);
+      const reverseBlog = blog.reverse();
+      res.send(reverseBlog);
     });
 
     // add new furniture

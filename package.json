@@ -1,6 +1,5 @@
 {
   "name": "chondo-server",
-  "homepage": "https://chondo.app",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

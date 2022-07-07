@@ -32,7 +32,8 @@ async function run() {
       const query = {};
       const cursor = blogcollection.find(query);
       const result = await cursor.toArray();
-      res.send(result);
+      const reverseBlog = result.reverse();
+      res.send(reverseBlog);
     });
 
     //find one using id from database
@@ -40,8 +41,7 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const blog = await blogcollection.findOne(query);
-      const reverseBlog = blog.reverse();
-      res.send(reverseBlog);
+      res.send(blog);
     });
 
     // add new furniture

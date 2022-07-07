@@ -25,7 +25,46 @@ async function run() {
     await client.connect();
     console.log("Database connected");
 
+    const userCollection = client.db("chondo").collection("users");
     const blogcollection = client.db("chondo").collection("blogs");
+
+    //get all user
+    app.get("/user", async (req, res) => {
+      const users = await userCollection.find().toArray();
+      res.send(users);
+    });
+    // this is for user collection
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+
+      res.send(result);
+    });
+
+    // this is make admin
+    app.put("/user/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const updateDoc = {
+        $set: { role: "admin" },
+      };
+      const result = await userCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    // limit dashboard access
+    app.get("/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await userCollection.findOne({ email: email });
+      const isAdmin = user?.role === "admin";
+      res.send({ admin: isAdmin });
+    });
 
     // get all blogs from database
     app.get("/blogs", async (req, res) => {
@@ -48,6 +87,14 @@ async function run() {
     app.post("/blogs", async (req, res) => {
       const newBlog = req.body;
       const result = await blogcollection.insertOne(newBlog);
+      res.send(result);
+    });
+
+    //this is for delete tool
+    app.delete("/blogs/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await blogcollection.deleteOne(filter);
       res.send(result);
     });
   } finally {
